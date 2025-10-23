@@ -1,36 +1,36 @@
 {
     "swerve": {
       "module": {
-        "type": "MK4i", // SDS MK4i module type
-        "gearRatio": "L2" // Gear ratio for L2 configuration
+        "type": "MK4i", 
+        "gearRatio": "L2" 
       },
       "motors": {
         "driveMotor": {
-          "type": "NEO", // Drive motor type
-          "inverted": false // Adjust based on your wiring
+          "type": "NEO", 
+          "inverted": false 
         },
         "steerMotor": {
-          "type": "NEO", // Steer motor type
-          "inverted": false // Adjust based on your wiring
+          "type": "NEO", 
+          "inverted": false 
         }
       },
       "encoders": {
         "absoluteEncoder": {
-          "type": "CANcoder", // Absolute encoder type (e.g., CTRE CANcoder)
-          "inverted": false // Adjust based on your wiring
+          "type": "CANcoder", 
+          "inverted": false 
         }
       },
       "locations": [
-        { "x": 0.381, "y": 0.381 }, // Front-left module location (meters)
-        { "x": 0.381, "y": -0.381 }, // Front-right module location (meters)
-        { "x": -0.381, "y": 0.381 }, // Back-left module location (meters)
-        { "x": -0.381, "y": -0.381 } // Back-right module location (meters)
+        { "x": 0.381, "y": 0.381 }, 
+        { "x": 0.381, "y": -0.381 }, 
+        { "x": -0.381, "y": 0.381 }, 
+        { "x": -0.381, "y": -0.381 } 
       ],
       "offsets": [
-        0.0, // Front-left module offset (radians)
-        0.0, // Front-right module offset (radians)
-        0.0, // Back-left module offset (radians)
-        0.0  // Back-right module offset (radians)
+        0.0, 
+        0.0,
+        0.0, 
+        0.0  
       ]
     }
   }
