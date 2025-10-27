@@ -39,6 +39,8 @@ public final class Constants
                 new Translation2d(kWheelBase / 2, kTrackWidth / 2),
                 new Translation2d(-kWheelBase / 2, -kTrackWidth / 2),
                 new Translation2d(-kWheelBase / 2, kTrackWidth / 2));
+
+        public static final double kWheelRadiusMeters = kWheelDiameterMeters / 2.0;
         
         public static final int kFrontLeftDriveMotorPort = 8;
         public static final int kBackLeftDriveMotorPort = 2;

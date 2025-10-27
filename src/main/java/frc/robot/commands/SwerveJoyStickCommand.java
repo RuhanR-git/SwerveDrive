@@ -17,7 +17,7 @@ public class SwerveJoyStickCommand extends Command
     private final Supplier<Boolean> fieldOrientedFunction;
     private final SlewRateLimiter xLimiter, yLimiter, turningLimiter;
 
-    public SwerveJoystickCmd(SwerveSubsystem swerveSubsystem,
+    public SwerveJoyStickCommand(SwerveSubsystem swerveSubsystem,
                              Supplier<Double> xSpdFunction,
                              Supplier<Double> ySpdFunction,
                              Supplier<Double> turningSpdFunction,
