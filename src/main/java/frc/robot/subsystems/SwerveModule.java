@@ -1,11 +1,10 @@
 package frc.robot.subsystems;
 
 import com.revrobotics.spark.SparkMax;
-import com.ctre.phoenix.sensors.AbsoluteSensorRange;
 import com.ctre.phoenix6.StatusSignal;
 import com.ctre.phoenix6.configs.CANcoderConfiguration;
 import com.ctre.phoenix6.hardware.CANcoder;
-import com.ctre.phoenix6.signals.SensorDirectionValue;
+
 import com.revrobotics.spark.SparkLowLevel.MotorType;
 
 import edu.wpi.first.math.controller.PIDController;
@@ -49,10 +48,16 @@ public class SwerveModule
         steerMotor.setInverted(steerMotorReversed);
 
         // make 0–1.0 correspond to 0–360 degrees or 0–2π radians
-        cfg.MagnetSensor.AbsoluteSensorDiscontinuityPoint = 0.0;
-        cfg.MagnetSensor.SensorDirection = SensorDirectionValue.CounterClockwise_Positive;
-        driveEncoder.getConfigurator().apply(cfg);
-        steerEncoder.getConfigurator().apply(cfg);
+        // Configure position conversion (rotations to meters or radians)
+        driveEncoder.getConfigurator().apply(new CANcoderConfiguration() 
+        {
+            double sensorToMechanismRatio = ModuleConstants.kDriveEncoderRot2Meter;
+        });
+        steerEncoder.getConfigurator().apply(new CANcoderConfiguration() {{
+            double sensorToMechanismRatio = ModuleConstants.kTurningEncoderRot2Rad;
+        }});
+
+        driveEncoder.getConfigurator().apply(new CANcoderConfiguration() {{}});
 
         turningPidController = new PIDController(ModuleConstants.kPTurning, 0, 0);
         turningPidController.enableContinuousInput(-Math.PI, Math.PI);
@@ -93,14 +98,35 @@ public class SwerveModule
     public void resetEncoders() 
     {
         driveEncoder.setPosition(0.0);
-        steerEncoder.setPosition(getAbsoluteEncoderRad());
+        steerEncoder.setPosition(0.0);
     }
 
     public SwerveModuleState getState() 
     {
+        // Get drive velocity in meters per second
+        //StatusSignal<AngularVelocity> --> double linear velocity
+        StatusSignal<AngularVelocity> driveVelocity = driveEncoder.getVelocity();
+        double driveVelocityPerRad = driveVelocity.getValue().toRadians(); // radians per second
+
+
+
+
+        Angle turningPosition = steerEncoder.getPosition().getValue(); // radians
+
+        return new SwerveModuleState(driveVelocity, new Rotation2d(turningPosition));
+
+
+
         return new SwerveModuleState();
+
         // Angle from absolute encoder (radians)
+        // Double angleRadWrapper = new Double(getAbsoluteEncoderRad());
+        // double angleRad = angleRadWrapper.valueOf(angleRadWrapper);
+
+        // double angleRad = (double) getPosition().getValue().toRadians();
+        // Commented just in case of error
         double angleRad = getAbsoluteEncoderRad();
+        
 
         // Get drive angular velocity from the StatusSignal; assume it's in radians/sec or adapt extraction to your API.
         double driveAngularRadPerSec = 0.0;
@@ -111,16 +137,23 @@ public class SwerveModule
                 // Attempt common accessor names; change to match your library if needed.
                 var angVel = status.getValue();
                 // try methods that might exist; prefer radians/sec
-                if (hasMethod(angVel, "getRadiansPerSecond")) {
+                if (hasMethod(angVel, "getRadiansPerSecond")) 
+                {
                     driveAngularRadPerSec = (double) angVel.getClass().getMethod("getRadiansPerSecond").invoke(angVel);
-                } else if (hasMethod(angVel, "getRadians")) {
+                } 
+                else if (hasMethod(angVel, "getRadians")) 
+                {
                     driveAngularRadPerSec = (double) angVel.getClass().getMethod("getRadians").invoke(angVel);
-                } else if (hasMethod(angVel, "getRPS")) {
+                } 
+                else if (hasMethod(angVel, "getRPS")) 
+                {
                     driveAngularRadPerSec = ((double) angVel.getClass().getMethod("getRPS").invoke(angVel)) * 2.0 * Math.PI;
-                } else if (hasMethod(status.getClass(), "get")) {
+                } 
+                else if (hasMethod(angVel, "get")) 
+                {
                     // fallback if StatusSignal returns primitive via get()
                     Object val = status.getClass().getMethod("get").invoke(status);
-                    if (val instanceof Number) driveAngularRadPerSec = ((Number) val).doubleValue();
+                    if (val instanceof Number number) driveAngularRadPerSec = number.doubleValue();
                 }
             }
         } catch (Exception e) {
@@ -134,6 +167,11 @@ public class SwerveModule
         return new SwerveModuleState(speedMps, new Rotation2d(angleRad));
     }
 
+    private boolean hasMethod(AngularVelocity angVel, String string) {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'hasMethod'");
+    }
+
     public void setDesiredState(SwerveModuleState state)
     {
         if (Math.abs(state.speedMetersPerSecond) < 0.001)
@@ -142,9 +180,11 @@ public class SwerveModule
             return;
         }
 
+        // double steerPos = getSteerPosition().getValueAsDouble();
+        // Commented just in case of error
         state = SwerveModuleState.optimize(state, getState().angle);
         driveMotor.set(state.speedMetersPerSecond / DriveConstants.kPhysicalMaxSpeedMetersPerSecond);
-        steerMotor.set(turningPidController.calculate(getSteerPosition(), state.angle.getRadians()));
+        steerMotor.set(turningPidController.calculate(getSteerPosition().getValueAsDouble(), state.angle.getRadians()));
         SmartDashboard.putString("Swerve[" + absoluteEncoder.getChannel() + "] state", state.toString());
     }
 
