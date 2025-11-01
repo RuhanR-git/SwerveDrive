@@ -1,11 +1,11 @@
 package frc.robot.subsystems;
 
-import com.revrobotics.spark.SparkMax;
+import com.ctre.phoenix6.hardware.CANcoder;
 import com.ctre.phoenix6.StatusSignal;
 import com.ctre.phoenix6.configs.CANcoderConfiguration;
-import com.ctre.phoenix6.hardware.CANcoder;
-
 import com.revrobotics.spark.SparkLowLevel.MotorType;
+
+import com.revrobotics.spark.SparkMax;
 
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -36,6 +36,7 @@ public class SwerveModule
 
     CANcoderConfiguration cfg = new CANcoderConfiguration();
 
+    @SuppressWarnings("deprecation")
     public SwerveModule(int driveMotorId, int steerMotorId, boolean driveMotorReversed, boolean steerMotorReversed, int absoluteEncoderId, double absoluteEncoderOffset, boolean absoluteEncoderReversed) 
     {
         this.absoluteEncoderOffsetRad = absoluteEncoderOffset;
@@ -46,16 +47,6 @@ public class SwerveModule
 
         driveMotor.setInverted(driveMotorReversed);
         steerMotor.setInverted(steerMotorReversed);
-
-        // make 0–1.0 correspond to 0–360 degrees or 0–2π radians
-        // Configure position conversion (rotations to meters or radians)
-        driveEncoder.getConfigurator().apply(new CANcoderConfiguration() 
-        {
-            double sensorToMechanismRatio = ModuleConstants.kDriveEncoderRot2Meter;
-        });
-        steerEncoder.getConfigurator().apply(new CANcoderConfiguration() {{
-            double sensorToMechanismRatio = ModuleConstants.kTurningEncoderRot2Rad;
-        }});
 
         driveEncoder.getConfigurator().apply(new CANcoderConfiguration() {{}});
 
@@ -103,30 +94,10 @@ public class SwerveModule
 
     public SwerveModuleState getState() 
     {
-        // Get drive velocity in meters per second
-        //StatusSignal<AngularVelocity> --> double linear velocity
-        StatusSignal<AngularVelocity> driveVelocity = driveEncoder.getVelocity();
-        double driveVelocityPerRad = driveVelocity.getValue().toRadians(); // radians per second
-
-
-
-
-        Angle turningPosition = steerEncoder.getPosition().getValue(); // radians
-
-        return new SwerveModuleState(driveVelocity, new Rotation2d(turningPosition));
-
-
-
-        return new SwerveModuleState();
-
         // Angle from absolute encoder (radians)
-        // Double angleRadWrapper = new Double(getAbsoluteEncoderRad());
-        // double angleRad = angleRadWrapper.valueOf(angleRadWrapper);
-
-        // double angleRad = (double) getPosition().getValue().toRadians();
-        // Commented just in case of error
-        double angleRad = getAbsoluteEncoderRad();
-        
+        @SuppressWarnings("removal")
+        Double angleRadWrapper = new Double(getAbsoluteEncoderRad());
+        double angleRad = Double.valueOf(angleRadWrapper);       
 
         // Get drive angular velocity from the StatusSignal; assume it's in radians/sec or adapt extraction to your API.
         double driveAngularRadPerSec = 0.0;
@@ -172,6 +143,7 @@ public class SwerveModule
         throw new UnsupportedOperationException("Unimplemented method 'hasMethod'");
     }
 
+    @SuppressWarnings("deprecation")
     public void setDesiredState(SwerveModuleState state)
     {
         if (Math.abs(state.speedMetersPerSecond) < 0.001)
