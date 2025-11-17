@@ -1,11 +1,10 @@
 package frc.robot.subsystems;
 
-import com.revrobotics.spark.SparkMax;
 import com.ctre.phoenix6.StatusSignal;
 import com.ctre.phoenix6.configs.CANcoderConfiguration;
 import com.ctre.phoenix6.hardware.CANcoder;
-
 import com.revrobotics.spark.SparkLowLevel.MotorType;
+import com.revrobotics.spark.SparkMax;
 
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -15,11 +14,8 @@ import edu.wpi.first.units.measure.AngularVelocity;
 import edu.wpi.first.wpilibj.AnalogInput;
 import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-
 import frc.robot.Constants.DriveConstants;
 import frc.robot.Constants.ModuleConstants;
-
-import edu.wpi.first.units.Units;
 
 
 public class SwerveModule 
@@ -124,7 +120,6 @@ public class SwerveModule
         // // double angleRad = (double) getAbsoluteEncoderRad();
         // // Commented just in case of error
         // double angleRad = getAbsoluteEncoderRad();
-        
         
         // // Get drive angular velocity from the StatusSignal; assume it's in radians/sec or adapt extraction to your API.
         // double driveAngularRadPerSec = 0.0;
