@@ -16,17 +16,18 @@ public class RobotContainer {
 
   private final XboxController driverController = new XboxController(0);
   
-  public RobotContainer() {
-        configureBindings();
-        swerveSubsystem.setDefaultCommand(
-            new SwerveJoyStickCommand(
-                swerveSubsystem,
-                () -> -driverController.getLeftY(),
-                () -> -driverController.getLeftX(),
-                () -> -driverController.getRightX(),
-                () -> OIConstants.kDriverControllerDeadband
-            )
-        );
+  public RobotContainer() 
+  {
+    configureBindings();
+    swerveSubsystem.setDefaultCommand( 
+      new SwerveJoyStickCommand(
+        swerveSubsystem, 
+        () -> -driverController.getRawAxis(OIConstants.kDriverYAxis),
+        () -> driverController.getRawAxis(OIConstants.kDriverXAxis),
+        () -> driverController.getRawAxis(OIConstants.kDriverRotAxis),
+        () -> !driverController.getRawButton(OIConstants.kDriverFieldOrientedButtonIdx)
+      )
+      );
   }
 
     private void configureBindings()

@@ -32,8 +32,6 @@ public class SwerveModule
     private final boolean absoluteEncoderReversed;
     private final double absoluteEncoderOffsetRad;
 
-    CANcoderConfiguration cfg = new CANcoderConfiguration();
-
     @SuppressWarnings("deprecation")
     public SwerveModule(int driveMotorId, int steerMotorId, boolean driveMotorReversed, boolean steerMotorReversed, int absoluteEncoderId, double absoluteEncoderOffset, boolean absoluteEncoderReversed) 
     {
@@ -99,10 +97,8 @@ public class SwerveModule
 
         double velocity = velocitySignal.getValueAsDouble(); // rotation/s * circum * gear Ratio
 
-        double circumference = 10 * Math.PI; // circumference = 2 * pi * r
+        velocity *= ModuleConstants.kWheelCircumferenceMeters; // rotations/s * circum = linear m/s
 
-        velocity *= circumference; // rotations/s * circum = linear m/s
-        
         Angle turningPosition = steerEncoder.getPosition().getValue(); // radians
 
         return new SwerveModuleState(velocity, new Rotation2d(turningPosition));

@@ -9,23 +9,18 @@ public final class Constants
 {
     public static final class ModuleConstants
     {
-        public static final double kWheelDiameterMeters = Units.inchesToMeters(4);
-        public static final double kDriveMotorGearRatio = 1 / 5.8462;
-        public static final double kTurningMotorGearRatio = 1 / 18.0;
+        public static final double kWheelRadiusMeters = 0.05;
+        public static final double kWheelDiameterMeters = ModuleConstants.kWheelRadiusMeters * 2;
+        public static final double kWheelCircumferenceMeters = ModuleConstants.kWheelDiameterMeters * Math.PI;
+        public static final double kDriveMotorGearRatio = 1 / 6.75;
+        public static final double kSteerMotorGearRatio = 1 / 6.75;
         public static final double kDriveEncoderRot2Meter = kDriveMotorGearRatio * Math.PI * kWheelDiameterMeters;
-        public static final double kTurningEncoderRot2Rad = kTurningMotorGearRatio * 2 * Math.PI;
+        public static final double kSteerEncoderRot2Rad = kSteerMotorGearRatio * 2 * Math.PI;
         public static final double kDriveEncoderRPM2MeterPerSec = kDriveEncoderRot2Meter / 60;
-        public static final double kTurningEncoderRPM2RadPerSec = kTurningEncoderRot2Rad / 60;
+        public static final double kTurningEncoderRPM2RadPerSec = kSteerEncoderRot2Rad / 60;
         public static final double kPTurning = 0.5;
     }
     
-    public static final double kWheelDiameterMeters = Units.inchesToMeters(4);
-    public static final double kDriveMotorGearRatio = 1 / 5.8462;
-    public static final double kSteerMotorGearRatio = 1 / 18.0;
-    public static final double kDriveEncoderRot2Meter = kDriveMotorGearRatio * Math.PI * kWheelDiameterMeters;
-    public static final double kSteerEncoderRot2Rad = kSteerMotorGearRatio * 2 * Math.PI;
-    public static final double kDriveEncoderRPM2MeterPerSec = kDriveEncoderRot2Meter / 60;
-    public static final double kSteerEncoderRPM2RadPerSec = kSteerEncoderRot2Rad / 60;
     public static final double kPSteer = 0.5;
 
     public static final class DriveConstants
@@ -39,8 +34,6 @@ public final class Constants
                 new Translation2d(kWheelBase / 2, kTrackWidth / 2),
                 new Translation2d(-kWheelBase / 2, -kTrackWidth / 2),
                 new Translation2d(-kWheelBase / 2, kTrackWidth / 2));
-
-        public static final double kWheelRadiusMeters = kWheelDiameterMeters / 2.0;
         
         public static final int kFrontLeftDriveMotorPort = 8;
         public static final int kBackLeftDriveMotorPort = 2;
