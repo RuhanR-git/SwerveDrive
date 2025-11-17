@@ -34,6 +34,7 @@ public class SwerveModule
 
     CANcoderConfiguration cfg = new CANcoderConfiguration();
 
+    @SuppressWarnings("deprecation")
     public SwerveModule(int driveMotorId, int steerMotorId, boolean driveMotorReversed, boolean steerMotorReversed, int absoluteEncoderId, double absoluteEncoderOffset, boolean absoluteEncoderReversed) 
     {
         this.absoluteEncoderOffsetRad = absoluteEncoderOffset;
@@ -44,16 +45,6 @@ public class SwerveModule
 
         driveMotor.setInverted(driveMotorReversed);
         steerMotor.setInverted(steerMotorReversed);
-
-        // make 0–1.0 correspond to 0–360 degrees or 0–2π radians
-        // Configure position conversion (rotations to meters or radians)
-        driveEncoder.getConfigurator().apply(new CANcoderConfiguration() 
-        {
-            double sensorToMechanismRatio = ModuleConstants.kDriveEncoderRot2Meter;
-        });
-        steerEncoder.getConfigurator().apply(new CANcoderConfiguration() {{
-            double sensorToMechanismRatio = ModuleConstants.kTurningEncoderRot2Rad;
-        }});
 
         driveEncoder.getConfigurator().apply(new CANcoderConfiguration() {{}});
 
@@ -99,16 +90,18 @@ public class SwerveModule
         steerEncoder.setPosition(0.0);
     }
 
-    public SwerveModuleState getState() 
-    {
+    public SwerveModuleState getState() {
         // Get drive velocity in meters per second
-        //StatusSignal<AngularVelocity> --> double linear velocity
-        StatusSignal<AngularVelocity> velocitySignal = driveEncoder.getVelocity(); // we need to convert rotations/s to m/s by using gear ratio and wheel dimensions ~ maddox
-        /*
-         * we 
-         * 
-         */
+        // StatusSignal<AngularVelocity> --> double linear velocity
+        StatusSignal<AngularVelocity> velocitySignal = driveEncoder.getVelocity(); // we need to convert rotations/s to
+                                                                                   // m/s by using gear ratio and wheel
+                                                                                   // dimensions ~ maddox
+
         double velocity = velocitySignal.getValueAsDouble(); // rotation/s * circum * gear Ratio
+
+        double circumference = 10 * Math.PI; // circumference = 2 * pi * r
+
+        velocity *= circumference; // rotations/s * circum = linear m/s
         
         Angle turningPosition = steerEncoder.getPosition().getValue(); // radians
 
@@ -118,45 +111,51 @@ public class SwerveModule
         // // Breaks a lot :(
         // // double angleRad = (double) getPosition().getValue().toRadians();
         // // double angleRad = (double) getAbsoluteEncoderRad();
-        // // Commented just in case of error
+ // // Commented just in case of error
         // double angleRad = getAbsoluteEncoderRad();
-        
+
+        //        
         // // Get drive angular velocity from the StatusSignal; assume it's in radians/sec or adapt extraction to your API.
-        // double driveAngularRadPerSec = 0.0;
-        // try {
-        //     // Adjust these accessors if your StatusSignal/AngularVelocity API differs (e.g. .getValue(), .getRadians(), .getRPS(), etc.)
-        //     var status = getDriveVelocity();
-        //     if (status != null && status.getValue() != null) {
-        //         // Attempt common accessor names; change to match your library if needed.
-        //         var angVel = status.getValue();
-        //         // try methods that might exist; prefer radians/sec
-        //         if (hasMethod(angVel, "getRadiansPerSecond")) 
-        //         {
-        //             driveAngularRadPerSec = (double) angVel.getClass().getMethod("getRadiansPerSecond").invoke(angVel);
-        //         } 
-        //         else if (hasMethod(angVel, "getRadians")) 
-        //         {
-        //             driveAngularRadPerSec = (double) angVel.getClass().getMethod("getRadians").invoke(angVel);
-        //         } 
-        //         else if (hasMethod(angVel, "getRPS")) 
-        //         {
-        //             driveAngularRadPerSec = ((double) angVel.getClass().getMethod("getRPS").invoke(angVel)) * 2.0 * Math.PI;
-        //         } 
-        //         else if (hasMethod(angVel, "get")) 
-        //         {
-        //             // fallback if StatusSignal returns primitive via get()
-        //             Object val = status.getClass().getMethod("get").invoke(status);
-        //             if (val instanceof Number number) driveAngularRadPerSec = number.doubleValue();
+        // le driveAngularRadPerSec = 0.0;
+
+        //        // {
+        // // Adjust these accessors if your StatusSignal/AngularVelocity API differs (e.g. .getValue(), .getRadians(), .getRPS(), etc.)
+        // status = getDriveVelocity();
+        // status != null && status.getValue() != null) {
+        // // Attempt common accessor names; change to match your library if needed.
+        // var angVel = status.getValue();
+        // // try methods that might exist; prefer radians/sec
+        // hasMethod(angVel, "getRadiansPer
+        //Second")) 
+        // {
+        //     driveAngularRadPerSec = (double) angVel.getClass().getMethod("getRadiansPerSecond").invoke(angVel);
+        // } 
+        //  if (hasMethod(angVel, "getRadia
+        //ns")) 
+        // {
+        //     driveAngularRadPerSec = (double) angVel.getClass().getMethod("getRadians").invoke(angVel);
+        // } 
+        //  if (hasMethod(angVel, "getRPS"))
+        // 
+        // {
+        //     driveAngularRadPerSec = ((double) angVel.getClass().getMethod("getRPS").invoke(angVel)) * 2.0 * Math.PI;
+        // } 
+        //  if (hasMethod(angVel, "get")) 
+        //         // // fallback if StatusSignal returns primitive via get()
+
+        //        //     Object val = status.getClass().getMethod("get").invoke(status);
+        //         if (val instanceof Number number) driveAngularRadPerSec = number.doubleValue();
         //         }
-        //     }
+        // }
         // } catch (Exception e) {
         //     // ignore and keep zero
         // }
 
-        // // Convert wheel angular velocity (rad/s) to linear meters/sec using wheel radius constant
+        //
+
+        //        // // Convert wheel angular velocity (rad/s) to linear meters/sec using wheel radius constant
         // double wheelRadius = DriveConstants.kWheelRadiusMeters; // ensure this constant exists
         // double speedMps = driveAngularRadPerSec * wheelRadius;
-
         // return new SwerveModuleState(speedMps, new Rotation2d(angleRad));
         
     }
@@ -166,6 +165,7 @@ public class SwerveModule
         throw new UnsupportedOperationException("Unimplemented method 'hasMethod'");
     }
 
+    @SuppressWarnings("deprecation")
     public void setDesiredState(SwerveModuleState state)
     {
         if (Math.abs    (state.speedMetersPerSecond) < 0.001)
