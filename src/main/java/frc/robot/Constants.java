@@ -9,7 +9,7 @@ public final class Constants
 {
     public static final class ModuleConstants
     {
-        public static final double kWheelRadiusMeters = 0.05;
+        public static final double kWheelRadiusMeters = 0.0508;
         public static final double kWheelDiameterMeters = ModuleConstants.kWheelRadiusMeters * 2;
         public static final double kWheelCircumferenceMeters = ModuleConstants.kWheelDiameterMeters * Math.PI;
         public static final double kDriveMotorGearRatio = 1 / 6.75;
