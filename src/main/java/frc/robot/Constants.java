@@ -29,12 +29,16 @@ public final class Constants
         // Distance between right and left wheels
         public static final double kWheelBase = Units.inchesToMeters(25.5);
         // Distance between front and back wheels
-        public static final SwerveDriveKinematics kDriveKinematics = new SwerveDriveKinematics(
-                new Translation2d(kWheelBase / 2, -kTrackWidth / 2),
-                new Translation2d(kWheelBase / 2, kTrackWidth / 2),
-                new Translation2d(-kWheelBase / 2, -kTrackWidth / 2),
-                new Translation2d(-kWheelBase / 2, kTrackWidth / 2));
+        public static final SwerveDriveKinematics kDriveKinematics = new SwerveDriveKinematics
+        (
+            new Translation2d(kWheelBase / 2, -kTrackWidth / 2),
+            new Translation2d(kWheelBase / 2, kTrackWidth / 2),
+            new Translation2d(-kWheelBase / 2, -kTrackWidth / 2),
+            new Translation2d(-kWheelBase / 2, kTrackWidth / 2)
+        );
         
+        public static final int kDriverControllerPort = 0;
+
         public static final int kFrontLeftDriveMotorPort = 8;
         public static final int kBackLeftDriveMotorPort = 2;
         public static final int kFrontRightDriveMotorPort = 6;
@@ -76,7 +80,7 @@ public final class Constants
 
         public static final double kTeleDriveMaxSpeedMetersPerSecond = kPhysicalMaxSpeedMetersPerSecond / 4;
         public static final double kTeleDriveMaxAngularSpeedRadiansPerSecond = //
-                kPhysicalMaxAngularSpeedRadiansPerSecond / 4;
+        kPhysicalMaxAngularSpeedRadiansPerSecond / 4;
         public static final double kTeleDriveMaxAccelerationUnitsPerSecond = 3;
         public static final double kTeleDriveMaxAngularAccelerationUnitsPerSecond = 3;
     }
@@ -85,21 +89,22 @@ public final class Constants
     {
         public static final double kMaxSpeedMetersPerSecond = DriveConstants.kPhysicalMaxSpeedMetersPerSecond / 4;
         public static final double kMaxAngularSpeedRadiansPerSecond = //
-                DriveConstants.kPhysicalMaxAngularSpeedRadiansPerSecond / 10;
+        DriveConstants.kPhysicalMaxAngularSpeedRadiansPerSecond / 10;
         public static final double kMaxAccelerationMetersPerSecondSquared = 3;
         public static final double kMaxAngularAccelerationRadiansPerSecondSquared = Math.PI / 4;
         public static final double kPXController = 1.5;
         public static final double kPYController = 1.5;
         public static final double kPThetaController = 3;
 
-        public static final TrapezoidProfile.Constraints kThetaControllerConstraints = //
-                new TrapezoidProfile.Constraints(
-                        kMaxAngularSpeedRadiansPerSecond,
-                        kMaxAngularAccelerationRadiansPerSecondSquared);
+        public static final TrapezoidProfile.Constraints kThetaControllerConstraints = new TrapezoidProfile.Constraints
+            (
+                kMaxAngularSpeedRadiansPerSecond,
+                kMaxAngularAccelerationRadiansPerSecondSquared
+            );
     }
 
     public static final class OIConstants {
-        public static final int kDriverControllerPort = 0;
+        public static final int kDriverJoystickPort = 0;
 
         public static final int kDriverYAxis = 1;
         public static final int kDriverXAxis = 0;
